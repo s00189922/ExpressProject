@@ -1,125 +1,163 @@
 const express = require('express');
 const Joi = require('joi');
+const mongoose = require('mongoose');
+const validationMiddleware = require('../middleware/jwtvalidation');
+
+// use object destructuring
+
+const { Artist, validate } = require('../models/artists');
 
 const router = express.Router();
 
-let artists = [
-    {
-        "ID":1,
-        "FirstName":"Eugene",
-        "LastName":"Delacroix"
-    },
-    {
-        "ID":2,
-        "FirstName":"Georges",
-        "LastName":"Seurat"
-    },
-    {
-        "ID":3,
-        "FirstName":"Claude",
-        "ArtistLastName":"Monet"
-    }
-    
-    ];
 
-    router.post('/', (req, res) => {
 
-        const newArtistId = artists.length;
-    
-        const artist = { artistId: newArtistId, ...req.body };
-      
-        const result = validateArtist(req.body)
+    router.post('/', async(req, res) => {
+
+        let result = validate(req.body)
       
         if (result.error)
         {
           res.status(400).json(result.error);
           return;
         }
-    
-        artists.push(artist);
-    
-        res.location(`/artists/${artistNumber}`);
-        res.status(201);
-        res.json(artist);
-    
-    
-     
-        console.log(`Artist name is ${artist.name} number of artist(s) is ${artists.length}`);
+
+        let artist = new Artist(req.body);
+        try {
+
+        artist = await artist.save();
+        res.location(`/${artist._id}`)
+         .status(201)
+         .json(artist);
+        }
+        catch {
+          res.status(500).json(result.error);
+        }
+        
+
     
     });
    
-    router.get('/', (req, res) => {
-        res.json(artists);
-      })
+    router.get('/', async(req, res) => {
+    
+      const { first_name, pagenumber,pagesize,year,limit } = req.query;
 
-    //GET a specific artist
-    router.get('/:id', (req,res) => {
+      let filter = {}
     
-        const id = req.params.id;
-        const artist = artists.find(a => a.artistId == parseInt(req.params.id))
+      if (first_name) {
+        filter.first_name = { $regex: `${first_name}`, $options: 'i' }; //the "i" makes it case insenstive
+      }
+
+     /*the year filter first needs to parse the year
+     this makes sure that the query string value converts to an integer.*/
+
+       const yearNumber = parseInt(year)
     
-        if (!artist) {
-            res.status(404);
-            res.json({error: 'not found'});
-            return
-        }
-    
-         res.json(artist);
-     })
-    
-    //DELETE a specific artist.
-    router.delete('/:id',(req, res) => {
-        const id = req.params.id;
-        const artist = artists.find(a => a.artistId == parseInt(req.params.id))
-    
-        
-        if(!artist) {
-            res.status(404).json('artist with that ID {id} was not found');
-            return;
-        }
-        const index = artists.indexOf(artist);
-    
-        artists.splice(index, 1);
-        res.send(artist);
-    
-      })
-    
-      //Updating artist
-      router.put('/:id', (req, res) => {
-    
-        const id = req.params.id;
-      
-        const result = validateArtist(req.body)
-      
-        if (result.error)
-        {
-          res.status(400).json(result.error);
-          return;
-        }
-    
-        const artist = artists.find(a => a.artistId == parseInt(req.params.id))
-    
-      if (!artist) {
-        res.status(404).json(`artist with that ID {req.params.id} was not found`);
-        return;
+      if (!isNaN(yearNumber)) {
+        filter.year_born = yearNumber
       }
     
-      console.log(`changing artist ${artist.name}`);
-      artist.name = req.body.name;
-      artist.quantity = req.body.quantity;
+      let limitNumber = parseInt(limit);
     
-      res.send(artist);
+      if (isNaN(limitNumber)) {
+        limitNumber = 0
+      }
+    
+      let pageSizeNumber = parseInt(pagesize);
+    
+      if (isNaN(pageSizeNumber)) {
+        pageSizeNumber = 0
+      }
+      let pageNumberNumber = parseInt(pagenumber);
+    
+      if (isNaN(pageNumberNumber)) {
+        pageNumberNumber = 1
+      }
+    
+      console.table(filter);
+    
+      
+      const artists = await Artist.
+        find(filter).
+        limit(pageSizeNumber).
+        sort({year_born : -1}). /*sort year_born in descending order. */
+        skip((pageNumberNumber -1)*pageSizeNumber)
+    
+    
+    
+    
+      res.json(artists);
+    })
+
+    // router.get('/addArtist/:name', (req, res) => {
+    
+    //   const aArtist = new Artist({ first_name: req.params.first_name });
+    
+    //   aArtist.save()
+    //     .then((result) => res.send(`${req.params.first_name} was saved`))
+    //     .catch((err) =>
+    //       console.error(err));
+    // });
+
+    // router.get('/artists', async (req, res) => {
+    //     res.json(artists);
+    //   })
+
+    //GET a specific artist
+    router.get('/:id', validationMiddleware.validJWTNeeded, async (req,res) => {
+
+      try {
+    
+        const artist = await Artist.findById(req.params.id);
+        if (artist) {
+          res.json(artist);
+        }
+        else {
+          res.status(404).json('Not found');
+        }
+      }
+      catch {
+        res.status(404).json('Not found: id is weird');
+      }
     
     })
     
-    //this will take an object and return a result 
-    
-    function validateArtist(artist) {
-        const schema = Joi.object({
-        FirstName: Joi.string().min(3).required(), //name must exist and it must have a minimum of 3 characters. 
-        LastName: Joi.string().min(3).required(),
-          //quantity: Joi.number().integer().min(0)
-        })
-        return schema.validate(artist);
+    //DELETE a specific artist.
+    router.delete('/:id',validationMiddleware.validJWTNeeded,async (req, res) => {
+
+      try {
+        const artist = await Artist.findByIdAndDelete(req.params.id)
+        res.send(artist)
       }
+      catch {
+        res.status(404).json(`artist with that ID ${req.params.id} was not found`);
+      }
+    
+    })
+    
+      //Updating artist
+      router.put('/:id',async(req, res) => {
+    
+        const result = validate(req.body)
+
+        if (result.error) {
+          res.status(400).json(result.error);
+          return;
+        }
+      
+        try {
+      
+          const artist = await Artist.findByIdAndUpdate(req.params.id, req.body, { new: true });
+          if (artist) {
+            res.json(artist);
+          }
+          else {
+            res.status(404).json('Not found');
+          }
+        }
+        catch {
+          res.status(404).json('Not found: id is weird');
+        }
+      
+      })
+
       module.exports = router;
