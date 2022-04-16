@@ -54,8 +54,8 @@ app.use(express.urlencoded({extended: false})); //Parse URL-encoded bodies
 app.use(cors());
 
 // the routes
-app.use('/artists', artists);
 app.use('/', home);
+app.use('/artists', artists);
 app.use('/users', users);
 app.use('/auth', auth);
 

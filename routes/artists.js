@@ -88,20 +88,6 @@ const router = express.Router();
       res.json(artists);
     })
 
-    // router.get('/addArtist/:name', (req, res) => {
-    
-    //   const aArtist = new Artist({ first_name: req.params.first_name });
-    
-    //   aArtist.save()
-    //     .then((result) => res.send(`${req.params.first_name} was saved`))
-    //     .catch((err) =>
-    //       console.error(err));
-    // });
-
-    // router.get('/artists', async (req, res) => {
-    //     res.json(artists);
-    //   })
-
     //GET a specific artist
     router.get('/:id', validationMiddleware.validJWTNeeded, async (req,res) => {
 
@@ -122,7 +108,7 @@ const router = express.Router();
     })
     
     //DELETE a specific artist.
-    router.delete('/:id',validationMiddleware.validJWTNeeded,async (req, res) => {
+    router.delete('/:id',async (req, res) => {
 
       try {
         const artist = await Artist.findByIdAndDelete(req.params.id)

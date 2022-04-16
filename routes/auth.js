@@ -55,9 +55,10 @@ router.post('/', async (req, res) => {
 
     // here we know the received password is the same as the one stored.
 
-    const token = createJWT(user);
+   // const token = createJWT(user);
 
     await setRefreshCookie(user, res);
+    let token = jwt.sign(payload, secret, { expiresIn: 60 })
 
     res.status(201).json({
         accessToken: token,
@@ -113,6 +114,7 @@ router.post('/refresh', async (req, res) => {
 
 const createJWT = (user) => {
 
+    // set the payload for the jwt.
     let payload = {};
     payload._id = user._id;
     payload.email = user.email;

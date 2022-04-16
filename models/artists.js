@@ -11,7 +11,8 @@ const artistSchema = new mongoose.Schema({
     phone_number: Number,
     gender:String,
     nationality:String,
-    year_born:Number
+    year_born:Number,
+    tags: [String]
 })
 
 const Artist = mongoose.model('Artist', artistSchema);
@@ -26,8 +27,8 @@ function validateArtist(artist) {
     phone_number:Joi.number(),
     gender:Joi.string(),
     nationality:Joi.string(),
-    year_born:Joi.number().integer().min(1500)
-      //quantity: Joi.number().integer().min(0)
+    year_born:Joi.number().integer().min(1500),
+    tags: Joi.array().items(Joi.string())
     })
     return schema.validate(artist);
   }
