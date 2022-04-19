@@ -3,9 +3,10 @@ const Joi = require('joi')
 const mongoose = require('mongoose');
 const cors = require('cors');
 const https = require('https')
-/*****************SSL CODE****************/
-//const fs = require('fs');
-/*****************SSL CODE****************/
+const cookieParser = require('cookie-parser')
+
+//const fs = require('fs'); /*****************SSL CODE****************/
+
 
 //importing router & telling app to use it
 const artists = require('./routes/artists');
@@ -15,8 +16,6 @@ const auth = require('./routes/auth');
 
 const app = express();
 const port = 3000
-
-// configure the middleware for parsing HTML requeest body
 
 const connectionString = 'mongodb://127.0.0.1:27017/artists2022'
 
@@ -36,12 +35,17 @@ db.once('open', () => {
   console.log("DB connected")
 });
 
+const corsOptions = {
+  origin: 'https://localhost:4200',
+  credentials: true // for cookies
+}
 
-  
+// configure the middleware for parsing HTML requeest body
 
 app.use(express.json());
 app.use(express.urlencoded({extended: false})); //Parse URL-encoded bodies
-app.use(cors());
+app.use(cors(corsOptions));
+app.use(cookieParser());
 
 // the routes
 app.use('/', home);

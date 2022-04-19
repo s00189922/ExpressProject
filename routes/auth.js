@@ -7,7 +7,6 @@ const credentials = require('../config')
 
 const router = express.Router();
 
-
 const { User } = require('../models/users');
 
 const secret = credentials.jwtsecretkey    // would normally import this from a config file
@@ -55,10 +54,10 @@ router.post('/', async (req, res) => {
 
     // here we know the received password is the same as the one stored.
 
-   // const token = createJWT(user);
+    const token = createJWT(user);
 
     await setRefreshCookie(user, res);
-    let token = jwt.sign(payload, secret, { expiresIn: 60 })
+   // let token = jwt.sign(payload, secret, { expiresIn: 60 })
 
     res.status(201).json({
         accessToken: token,
@@ -73,7 +72,7 @@ router.post('/', async (req, res) => {
 }
 );
 
-
+//Refresh
 router.post('/refresh', async (req, res) => {
     console.log('in refresh')
 
@@ -155,11 +154,12 @@ const setRefreshCookie = async (user, res, savedTokenData) => {
 // There are other complexities because a user may be logged in on more than
 // device and have refresh tokens for more than one device. So we won't go 
 // into the details. 
-
+//Create Dummy Function
 const createRefreshToken = (user) => {
     return 'testagain';
 }
 
+//Save Dummy Function
 const getSavedToken = (user) => {
     return 'testagain';
 }
