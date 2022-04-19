@@ -2,6 +2,10 @@ const express = require('express')
 const Joi = require('joi')
 const mongoose = require('mongoose');
 const cors = require('cors');
+const https = require('https')
+/*****************SSL CODE****************/
+//const fs = require('fs');
+/*****************SSL CODE****************/
 
 //importing router & telling app to use it
 const artists = require('./routes/artists');
@@ -33,20 +37,6 @@ db.once('open', () => {
 });
 
 
-// app.get('/', (req, res) => {
-
-//     res.send('Hello World isn\'t life great from aisling!');
-//   })
-  
-//   app.get('/addArtist/:name', (req, res) => {
-  
-//     const aArtist = new Artist({ first_name: req.params.first_name });
-  
-//     aArtist.save()
-//       .then((result) => res.send(`${req.params.first_name} was saved`))
-//       .catch((err) =>
-//         console.error(err));
-//   });
   
 
 app.use(express.json());
@@ -59,5 +49,16 @@ app.use('/artists', artists);
 app.use('/users', users);
 app.use('/auth', auth);
 
+/*****************SSL CODE****************/
+// const serverOptions = {
+//   key: fs.readFileSync("ssl/key.pem"),
+//   cert: fs.readFileSync("ssl/cert.pem")
+// };
+
+// https.createServer(serverOptions,app).listen(8080,() =>
+// console.log(`listening on 8080, don't forget the https`));
+/*****************SSL CODE****************/
+
 
 app.listen(port, () => console.log(`Express app listening on port ${port}!`))
+

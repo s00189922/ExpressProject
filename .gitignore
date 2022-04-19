@@ -25,5 +25,7 @@ coverage
 benchmarks/graphs
 
 # 
-
 .credentials.*
+
+## SSL certificate /*USED TO IGNORE SSL FOLDER/FILES*/
+ssl
