@@ -8,8 +8,11 @@ const cookieParser = require('cookie-parser')
 //const fs = require('fs'); /*****************SSL CODE****************/
 
 
-//importing router & telling app to use it
+//importing router/routes & telling app to use it
 const artists = require('./routes/artists');
+const artworks = require('./routes/artworks');
+const tickets = require('./routes/tickets');
+const events = require('./routes/events');
 const home = require('./routes/home');
 const users = require('./routes/users');
 const auth = require('./routes/auth');
@@ -48,10 +51,13 @@ app.use(cors(corsOptions));
 app.use(cookieParser());
 
 // the routes
-app.use('/', home);
 app.use('/artists', artists);
+app.use('/artworks', artworks);
+app.use('/tickets', tickets);
+app.use('/events', events);
 app.use('/users', users);
 app.use('/auth', auth);
+app.use('/', home);
 
 /*****************SSL CODE****************/
 // const serverOptions = {
