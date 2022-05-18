@@ -48,6 +48,7 @@ const corsOptions = {
 app.use(express.json());
 app.use(express.urlencoded({extended: false})); //Parse URL-encoded bodies
 app.use(cors(corsOptions));
+app.use(cors())
 app.use(cookieParser());
 
 // the routes
