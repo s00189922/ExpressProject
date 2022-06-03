@@ -29,3 +29,6 @@ benchmarks/graphs
 
 ## SSL certificate /*USED TO IGNORE SSL FOLDER/FILES*/
 ssl
+
+deploy.sh
+*node_modules*

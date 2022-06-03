@@ -3,6 +3,9 @@
 		{
 			"name": "ExpressProject",
 			"path": "."
+		},
+		{
+			"path": "..\\..\\..\\..\\..\\..\\official_joke_api\\jokes"
 		}
 	],
 	"settings": {}

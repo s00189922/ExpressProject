@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema({
         },
 );
 
+//this will take an object and return a result 
 
 function validateUser(user) {
     const schema = Joi.object({
@@ -21,11 +22,6 @@ function validateUser(user) {
     })
     return schema.validate(user);
 }
-
-
-const User = mongoose.model('User', userSchema);
-
-
 
 exports.User = User;
 exports.validate = validateUser;

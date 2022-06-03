@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Joi = require('joi');
 
-
+//information which is being stored about an artist
 
 const artistSchema = new mongoose.Schema({
     first_name: String,

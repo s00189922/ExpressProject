@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const Joi = require('joi');
 
+//information which is being stored about an artwork
+
 const artworkSchema = new mongoose.Schema({
     title: String,
     artist: String,
